@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" build-on-make="true" name="PayPerMail">
+    <output-path>$PROJECT_DIR$/out/artifacts/PayPerMail</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="be.vkt.PayPerMail.PayPerMail" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="Betall via Mail" />
+        <option name="vendor" value="Vlaamse Kampeertoeristen VZW" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="JavaFXApp.jar">
+        <element id="module-output" name="MyJfx" />
+      </element>
+    </root>
+  </artifact>
+</component>
