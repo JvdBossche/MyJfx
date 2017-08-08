@@ -8,15 +8,15 @@ import javafx.beans.property.StringProperty;
  */
 public class MailPayment {
 
-    private final StringProperty amount;
+    private final StringProperty amount;  //ToDo: turn this into a FloatProperty
     private final StringProperty name;
     private final StringProperty email;
 
     /**
      * Constructor with minimal initial data
      *
-     * @param amount
-     * @param email
+     * @param amount The amount (in EUR) to be paid.
+     * @param email  The E-mail address of the payer.
      */
     public MailPayment(String amount, String email) {
         this.amount = new SimpleStringProperty(amount);
@@ -27,9 +27,9 @@ public class MailPayment {
     /**
      * Constructor with initial data
      *
-     * @param amount
-     * @param name
-     * @param email
+     * @param amount The amount (in EUR) to be paid.
+     * @param name   The name of the payer. This name will be used as "Card Holder" / CN on the PayPage.
+     * @param email  The E-mail address of the payer.
      */
     public MailPayment(String amount, String name, String email) {
         this.amount = new SimpleStringProperty(amount);
