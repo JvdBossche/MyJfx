@@ -10,8 +10,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 public class PpmController {
 
@@ -78,14 +80,14 @@ public class PpmController {
             GraphicsContext gc2D = canvas.getGraphicsContext2D();
 
             //in white, paint a rectangle on it, with the full size
-            gc2D.setFill(javafx.scene.paint.Color.WHITE);
+            gc2D.setFill(Color.WHITE);
             gc2D.fillRect(0, 0, width, height);
 
             //start painting in black: each bit/pixel set in the bitMatix
-            gc2D.setFill(javafx.scene.paint.Color.BLACK);
-            for (int v = 0; v < height; v++) {
-                for (int h = 0; h < width; h++) {
-                    if (bitMatrix.get(v, h)) {
+            gc2D.setFill(Color.BLACK);
+            for (int v = 0; v < height; v++) {      // v: Vertical   <=> Y-axis
+                for (int h = 0; h < width; h++) {   // h: Horizontal <=> X-axis
+                    if (bitMatrix.get(h, v)) {
                         gc2D.fillRect(h, v, 1, 1);
                     }
                 }
@@ -106,5 +108,12 @@ public class PpmController {
 
     public void showAbout(ActionEvent actionEvent) {
         System.out.println("Called showAbout()");
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        //alert.initOwner(mainApp.getPrimaryStage());
+        alert.setTitle("Over PayPerMail");
+        alert.setHeaderText("Vlaamse Kampeertoeristen V.Z.W.: PayPerMail");
+        alert.setContentText("De koppeling van de velden naar de\n"+
+                "URL en QR ontbreekt nog :)");
+        alert.showAndWait();
     }
 }
