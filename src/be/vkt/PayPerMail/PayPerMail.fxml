@@ -34,12 +34,12 @@
         <GridPane hgap="5.0" maxWidth="1.7976931348623157E308" vgap="5.0">
             <Button fx:id="btnClear" mnemonicParsing="false" onAction="#clearForm" text="Maak formulier leeg" GridPane.columnSpan="2147483647" GridPane.rowIndex="0" />
             <Label fx:id="lblAmount" text="Bedrag" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="fldAmount" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+            <TextField fx:id="fldAmount" maxWidth="1.7976931348623157E308" promptText="99.99" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
             <!-- CN: Customer Name -->
             <Label fx:id="lblCN" text="Naam kaarthouder" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <TextField fx:id="fldCn" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+            <TextField fx:id="fldCn" maxWidth="1.7976931348623157E308" promptText="Naam" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
             <Label fx:id="lblEmail" text="E-mail" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <TextField fx:id="fldEmail" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+            <TextField fx:id="fldEmail" maxWidth="1.7976931348623157E308" promptText="naam@provider" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
             <Button fx:id="btnSurfToPayPage" mnemonicParsing="false" onAction="#surfToPayPage" text="Ga direct naar Betaalpagina" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
             <Button fx:id="btnGenerateQr" mnemonicParsing="false" onAction="#generateQrCode" text="Genereer QR code" GridPane.columnSpan="2147483647" GridPane.rowIndex="5" />
             <ImageView fx:id="imgQr" fitHeight="400.0" fitWidth="400.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">

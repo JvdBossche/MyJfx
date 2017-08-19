@@ -29,6 +29,9 @@ public class PpmController {
     //Reference to the main application
     private PayPerMail mainApp;
 
+    //The Data (Model)
+    private MailPayment mailPayment;
+
     /**
      * The constructor.
      * The constructor is called before the initialize() method.
@@ -43,13 +46,33 @@ public class PpmController {
     @FXML
     private void initialize() {
         System.out.println("In PpmController.initialize()");
-        fldAmount.setText("initial amount value");
-        fldCn.setText("initial name value");
-        fldEmail.setText("initial email value");
+        fldAmount.setText("");
+        fldCn.setText("");
+        fldEmail.setText("");
+        imgQr.setImage(null);
+
+        mailPayment = PayPerMail.getMailPayment();
+        mailPayment.setAmount(fldAmount.getText());
+        mailPayment.setEmail(fldEmail.getText());
+        mailPayment.setName(fldCn.getText());
 
         mainApp = PayPerMail.getAppInstance();
     }
 
+
+    //fieldChange actions
+
+    private void calculateUrl() {
+        System.out.println("in PpmController.calculateUrl()");
+
+        //get the field values from the dialog
+        mailPayment.setAmount(fldAmount.getText());
+        mailPayment.setEmail(fldEmail.getText());
+        mailPayment.setName(fldCn.getText());
+
+        mailPayment.calculateUrl();
+        fldAmount.setText(mailPayment.getAmount()); //the amount is cleaned by calculateUrl()
+    }
 
     //my actions :)
 
@@ -60,15 +83,17 @@ public class PpmController {
 
     public void surfToPayPage(ActionEvent actionEvent) {
         System.out.println("Called surfToPayPage()");
+        calculateUrl();
         HostServices services = mainApp.getServices();
-        services.showDocument("http://www.vkt.be"); //ToDo make this dynamic, duh
+        services.showDocument(mailPayment.getUrl());
     }
 
     public void generateQrCode(ActionEvent actionEvent) {
         System.out.println("Called generateQrCode()");
+        calculateUrl();
 
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        String inputUrl = "https://secure.paypage.be/ncol/test/orderstandard.asp?AMOUNT=1020&CN=Hanne%20Mari%C3%ABn&CURRENCY=EUR&LANGUAGE=nl_BE&ORDERID=Mobicar_1502092092340&OWNERCTY=B&PSPID=kampeertest&TITLE=Betaling%20aan%20Vlaamse%20Kampeertoeristen%20VZW%20op%20Mobicar&SHASIGN=7EA022A20B9A2182373613C0480C2D46E58B4B22";
+        String inputUrl = mailPayment.getUrl();
         int width = 400;
         int height = 400;
 
@@ -112,8 +137,7 @@ public class PpmController {
         //alert.initOwner(mainApp.getPrimaryStage());
         alert.setTitle("Over PayPerMail");
         alert.setHeaderText("Vlaamse Kampeertoeristen V.Z.W.: PayPerMail");
-        alert.setContentText("De koppeling van de velden naar de\n"+
-                "URL en QR ontbreekt nog :)");
+        alert.setContentText("Versie 0.1: de gegenereerde URL is nog niet correct");
         alert.showAndWait();
     }
 }

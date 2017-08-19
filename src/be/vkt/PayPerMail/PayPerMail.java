@@ -15,7 +15,7 @@ public class PayPerMail extends Application {
      */
     //private MailPayment mailPayment = new MailPayment();  //what I Started out with
     //private SimpleObjectProperty<MailPayment> mailPayment = new SimpleObjectProperty<>(this, "mailPayment", new MailPayment());  //after "convert to JavaFX property"
-    private SimpleObjectProperty<MailPayment> mailPayment;  //after "move initializer to constructor"
+    private static SimpleObjectProperty<MailPayment> mailPayment;  //after "move initializer to constructor"
 
     /**
      * A reference to this Application
@@ -35,7 +35,7 @@ public class PayPerMail extends Application {
      * Returns the data as a POJO
      * @return the data as a POJO
      */
-    public MailPayment getMailPayment() {
+    public static MailPayment getMailPayment() {
         return mailPayment.get();
     }
 
@@ -43,7 +43,7 @@ public class PayPerMail extends Application {
      * Returns the data as a JavaFX property
      * @return the data as a JavaFX property
      */
-    public SimpleObjectProperty<MailPayment> mailPaymentProperty() {
+    public SimpleObjectProperty<MailPayment> getMailPaymentProperty() {
         return mailPayment;
     }
 
