@@ -5,6 +5,8 @@ import javafx.beans.property.StringProperty;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
@@ -119,6 +121,18 @@ public class MailPayment {
         return sha1;
     }
 
+    //Helper function to URL-encode parameter values.
+    private String encodeVal(String val) {
+        String encoded = null;
+        try {
+            encoded = URLEncoder.encode(val, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+            encoded = val;
+        }
+        return encoded;
+    }
+
     public void calculateUrl() {
         final String shaPassPhrase = "VlaamseKampeertoeristen2017";
         final String basePage = "https://secure.paypage.be/ncol/test/orderstandard.asp?";
@@ -132,7 +146,6 @@ public class MailPayment {
         For these reasons, the string is built up piece by piece, but the order of the blocks may not be altered!
         */
         String parameterString = "";
-
 
         //AMOUNT
         String a = getAmount();
@@ -171,7 +184,7 @@ public class MailPayment {
         String n = getName();
         if (n != null && n.length() > 0) {
             stringToHash += "CN="+n+shaPassPhrase;
-            parameterString += "CN="+n+"&";
+            parameterString += "CN="+encodeVal(n)+"&";
             System.out.println("added name to stringToHash: "+stringToHash);
             System.out.println("added name to parameterString: "+parameterString);
         } else {
@@ -187,7 +200,7 @@ public class MailPayment {
         String e = getEmail();
         if (e != null && e.length() > 0) {
             stringToHash += "EMAIL="+e+shaPassPhrase;
-            parameterString += "EMAIL="+e+"&";
+            parameterString += "EMAIL="+encodeVal(e)+"&";
             System.out.println("added email to stringToHash: "+stringToHash);
             System.out.println("added email to parameterString: "+parameterString);
         } else {
@@ -205,20 +218,20 @@ public class MailPayment {
         String payLocation = "Mobicar";  //toDo: Turn this into a setting of some sort
         String timestamp = Long.toString(Instant.now().toEpochMilli());
         stringToHash += "ORDERID="+payLocation+"_"+timestamp+shaPassPhrase;
-        parameterString += "ORDERID="+payLocation+"_"+timestamp+"&";
+        parameterString += "ORDERID="+encodeVal(payLocation+"_"+timestamp)+"&";
         System.out.println("added orderid to stringToHash: "+stringToHash);
         System.out.println("added orderid to parameterString: "+parameterString);
 
         //PSPID
         String pspId = "kampeertest";  //toDo: Turn this into a setting of some sort
-        stringToHash += "PSPID"+pspId+shaPassPhrase;
-        parameterString += "PSPID"+pspId+"&";
+        stringToHash += "PSPID="+pspId+shaPassPhrase;
+        parameterString += "PSPID="+encodeVal(pspId)+"&";
         System.out.println("added pspid to stringToHash: "+stringToHash);
         System.out.println("added pspid to parameterString: "+parameterString);
 
         //TITLE
         stringToHash += "TITLE=Betaling aan Vlaamse Kampeertoeristen VZW op "+payLocation+shaPassPhrase;
-        parameterString += "TITLE=Betaling aan Vlaamse Kampeertoeristen VZW op "+payLocation+"&";
+        parameterString += "TITLE="+encodeVal("Betaling aan Vlaamse Kampeertoeristen VZW op "+payLocation)+"&";
         System.out.println("added title to stringToHash: "+stringToHash);
         System.out.println("added title to parameterString: "+parameterString);
 
@@ -231,5 +244,6 @@ public class MailPayment {
         StringBuilder sb = new StringBuilder();
         sb.append(basePage).append(parameterString);
         setUrl(sb.toString());
+        System.out.println("The generated URL is: "+getUrl());
     }
 }

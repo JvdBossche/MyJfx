@@ -4,17 +4,21 @@
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="be.vkt.PayPerMail.PayPerMail" />
-        <option name="description" value="" />
+        <option name="description" value="Genereert een URL van PayPage. Door die op te roepen, wordt een elektronische betaling gestart.&#10;De URL bevat het te betalen bedrag en impliciet ook de ontvanger (Vlaamse Kampeertoeristen VZW dus). Als er ook een E-mail adres word meegegeven, wordt er daar een betalingsbevestiging naartoe gestuurd. Een ingevoerde naam wordt gebruikt om die al in te vullen op de elektronische betaling." />
+        <option name="height" value="600" />
         <option name="htmlPlaceholderId" value="" />
-        <option name="title" value="Betall via Mail" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="Betaal via Mail" />
         <option name="vendor" value="Vlaamse Kampeertoeristen VZW" />
         <option name="version" value="" />
+        <option name="width" value="400" />
       </options>
     </properties>
     <root id="root">
-      <element id="archive" name="JavaFXApp.jar">
+      <element id="archive" name="PayPerMail.jar">
         <element id="module-output" name="MyJfx" />
       </element>
+      <element id="library" level="project" name="com.google.zxing:core:3.3.0" />
     </root>
   </artifact>
 </component>
