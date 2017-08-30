@@ -2,6 +2,7 @@ package be.vkt.PayPerMail;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.scene.control.Alert;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.prefs.Preferences;
 
 /**
  *  This is the model class for E-Mail payments
@@ -133,9 +135,39 @@ public class MailPayment {
         return encoded;
     }
 
+    String getPreference(String key) {
+        Preferences prefs = Preferences.userNodeForPackage(MailPayment.class);
+        String out = prefs.get(key, null);
+        if (out != null) {
+            return out;
+        } else {
+            if (key.equals("pspId")) {
+                prefs.put("pspId", "kampeertest");
+                return "kampeertest";
+            } else if (key.equals("shaPassPhrase")) {
+                prefs.put("shaPassPhrase", "VlaamseKampeertoeristen2017");
+                return "VlaamseKampeertoeristen2017";
+            } else if (key.equals("basePage")) {
+                prefs.put("basePage", "https://secure.paypage.be/ncol/test/orderstandard.asp?");
+                return "https://secure.paypage.be/ncol/test/orderstandard.asp?";
+            } else if (key.equals("payLocation")) {
+                prefs.put("payLocation", "Mobicar");
+                return "Mobicar";
+            } else if (key.equals("pageTitle")) {
+                prefs.put("pageTitle", "Betaling aan Vlaamse Kampeertoeristen VZW op "); // should en with a space: payLocation will be added
+                return "Betaling aan Vlaamse Kampeertoeristen VZW op ";
+            } else {
+                return "Unknown Key: "+key;
+            }
+        }
+    }
+
     public void calculateUrl() {
-        final String shaPassPhrase = "VlaamseKampeertoeristen2017";
-        final String basePage = "https://secure.paypage.be/ncol/test/orderstandard.asp?";
+        final String pspId = getPreference("pspId");
+        final String shaPassPhrase = getPreference("shaPassPhrase");
+        final String basePage = getPreference("basePage");
+        final String payLocation = getPreference("payLocation");
+        final String pageTitle = getPreference("pageTitle");
 
         String stringToHash = ""; /* According to
         https://support-paypage.v-psp.com/nl/nl/guides/integration%20guides/e-commerce/security-pre-payment-check#shainsignature
@@ -148,21 +180,21 @@ public class MailPayment {
         String parameterString = "";
 
         //AMOUNT
-        String a = getAmount();
-        System.out.println("entered AMOUNT: raw a = "+a);
-        a = a.replace(',', '.'); //in case somebody used a comma instead of a point
-        System.out.println("replaced comma by point => a = "+a);
-        a = a.replaceAll("[^\\d.]", "");  //Now get rid of anything but "0123456789."
-        System.out.println("regexp => a = "+a);
-        System.out.println("a.length() = "+a.length());
-        setAmount(a);
-        if (a != null && a.length() > 0) {
+        String amountRaw = getAmount();
+        System.out.println("entered AMOUNT: raw a = "+amountRaw);
+        String amountStr = amountRaw.replace(',', '.'); //in case somebody used a comma instead of a point
+        System.out.println("replaced comma by point => a = "+amountStr);
+        amountStr = amountStr.replaceAll("[^\\d.]", "");  //Now get rid of anything but "0123456789."
+        System.out.println("regexp => a = "+amountStr);
+        System.out.println("a.length() = "+amountStr.length());
+        setAmount(amountStr);
+        if (amountStr != null && amountStr.length() > 0) {
             //try to parse the amount as a Float
             Float amountFl;
             try {
-                amountFl = Float.parseFloat(a);
+                amountFl = Float.parseFloat(amountStr);
             } catch (NumberFormatException e) {
-                System.out.println("Even after cleanup, the amount could not be parsed: "+a);
+                System.out.println("Even after cleanup, the amount could not be parsed as a Float: "+amountStr);
                 e.printStackTrace();
                 amountFl = -99.99f; //just to let the rest of the program run
             }
@@ -177,7 +209,14 @@ public class MailPayment {
         } else {
             System.out.println("amount was empty (after cleanup)!");
             //bail out: a payment without a decent amount is useless
-            setUrl(""); return;
+            setUrl("bad amount: "+amountRaw);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Fout bedrag");
+            alert.setHeaderText(">>"+amountRaw+"<<");
+            alert.setContentText("De tekst die hierboven tussen \">>\" en \"<<\" staat,\nkon niet als een bedrag geïnterpreteerd worden.");
+            alert.showAndWait();
+
+            return;
         }
 
         //CN (Name)
@@ -215,7 +254,6 @@ public class MailPayment {
         System.out.println("added language to parameterString: "+parameterString);
 
         //ORDERID
-        String payLocation = "Mobicar";  //toDo: Turn this into a setting of some sort
         String timestamp = Long.toString(Instant.now().toEpochMilli());
         stringToHash += "ORDERID="+payLocation+"_"+timestamp+shaPassPhrase;
         parameterString += "ORDERID="+encodeVal(payLocation+"_"+timestamp)+"&";
@@ -223,15 +261,14 @@ public class MailPayment {
         System.out.println("added orderid to parameterString: "+parameterString);
 
         //PSPID
-        String pspId = "kampeertest";  //toDo: Turn this into a setting of some sort
         stringToHash += "PSPID="+pspId+shaPassPhrase;
         parameterString += "PSPID="+encodeVal(pspId)+"&";
         System.out.println("added pspid to stringToHash: "+stringToHash);
         System.out.println("added pspid to parameterString: "+parameterString);
 
         //TITLE
-        stringToHash += "TITLE=Betaling aan Vlaamse Kampeertoeristen VZW op "+payLocation+shaPassPhrase;
-        parameterString += "TITLE="+encodeVal("Betaling aan Vlaamse Kampeertoeristen VZW op "+payLocation)+"&";
+        stringToHash += "TITLE="+pageTitle+payLocation+shaPassPhrase;
+        parameterString += "TITLE="+encodeVal(pageTitle+payLocation)+"&";
         System.out.println("added title to stringToHash: "+stringToHash);
         System.out.println("added title to parameterString: "+parameterString);
 
